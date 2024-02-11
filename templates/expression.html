@@ -1,0 +1,39 @@
+{{ define "expression" }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Card</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f8fa;
+            color: #2d3648;
+            font-size: 20px;
+            margin: 0;
+            padding: 20px;
+        }
+        .expressiom-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center; 
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="expressiom-card">   
+        <p class="card__id"><strong>Id:</strong> {{.Id}}</p>
+        <p class="card__expression"><strong>Expression:</strong> {{.Expression}}</p>
+        <p class="card__result"><strong>Result:</strong> {{.Result}}</p>
+        <p class="card__status"><strong>Status:</strong> {{.Status}}</p>
+        <p class="card__time"><strong>StartDate:</strong> {{.StartDate}}</p>
+    </div>  
+</body>
+</html>
+{{ end }}

@@ -1,0 +1,86 @@
+{{ define "expressions" }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f8fa;
+            font-size: 20px;
+            color: #2d3648;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #2d3648;
+        }
+        .card {
+            margin-bottom: 10px;
+            padding: 10px;  
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .block {
+            display: flex;
+            flex-direction: column;
+            margin: auto;
+        }
+        .card {
+            font-weight: bold;
+            padding: 0px 30px 0px;
+            display: flex;
+            flex-direction: row;
+            text-decoration: none;
+            justify-content: space-between;
+            font-family: Arial, sans-serif;
+            color: #2d3648;
+            max-width: 100%;
+        }
+        .card__link {
+            padding: 0px 30px 0px;
+            display: flex;
+            font-weight: 500;
+            flex-direction: row;
+            text-decoration: none;
+            justify-content: space-between;
+            font-family: Arial, sans-serif;
+            color: #2d3648;
+            max-width: 100%;
+            background-color: #ffffff;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="block">
+        <h1>Expressions list</h1>
+        <div class="card">
+                <p class="card__id">ID</p>
+                <p class="card__expression">Expression</p>
+                <p class="card__result">Result</p>
+                <p class="card__status">Status</p>
+                <p class="card__time">StartDate</p>
+        </div>
+        {{range . }}
+            <a class="card__link" href="/expression?id={{ .Id }}">
+                <p class="card__id">{{.Id}}</p>
+                <p class="card__expression">{{.Expression}}</p>
+                <p class="card__result">{{.Result}}</p>
+                <p class="card__status">{{.Status}}</p>
+                <p class="card__time">{{.StartDate}}</p>
+            </a>
+        {{end}}
+    </div>
+</body>
+</html>
+{{ end }}

@@ -1,0 +1,97 @@
+{{ define "main" }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f8fa;
+            color: #2d3648;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #2d3648;
+            text-align: center;
+            margin-top: 150px;
+            margin-bottom: 30px;
+        }
+        .message {
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 440px;
+            margin: 0 auto;
+        }
+        /* Стили для текстового поля с фиксированным размером */
+        .input-text {
+            width: 400px; /* Ширина поля */
+            height: 50px; /* Высота поля */
+            resize: none; /* Запрещаем изменение размеров */
+            padding: 10px; /* Внутренний отступ */
+            margin: auto;
+            text-align: center;
+            margin-top: 5px; /* Отступ сверху */
+            margin-bottom: 15px; /* Отступ снизу */
+            border: 1px solid #ccc; /* Граница */
+            border-radius: 5px; /* Скругление углов */
+            font-size: 20px; /* Размер шрифта */
+            font-weight: 500;
+        }
+        /* Стили для кнопки */
+        .submit-button {
+            background-color: #2d3648;
+            color: #ffffff; /* Цвет текста кнопки */
+            border: none; /* Убираем границу кнопки */
+            padding: 10px 20px; /* Внутренний отступ кнопки */
+            border-radius: 5px; /* Скругление углов */
+            cursor: pointer; /* Курсор при наведении на кнопку */
+            font-size: 16px;
+            text-align: center;
+            margin: auto; /* Размер шрифта кнопки */
+        }
+        /* Стили для кнопки при наведении */
+        .submit-button:hover {
+            background-color: #2a78ff; /* Изменяем цвет фона при наведении */
+        }
+    </style>
+</head>
+<body>
+    <h1>Form</h1>
+    <div class="message">
+        <!-- Форма с текстовым полем -->
+        <form action="/submit" method="post">
+            <!-- Текстовое поле с фиксированным размером -->
+            <textarea class="input-text" name="text" placeholder="Enter your message..." required></textarea>
+            <!-- Кнопка отправки формы -->
+            <input type="submit" class="submit-button" value="Submit">
+        </form>
+    </div>
+    <script>
+        $(document).ready(function(){
+            $('#textForm').submit(function(e){
+                e.preventDefault(); // Предотвращаем стандартное поведение формы
+
+                // Отправляем данные формы на сервер с использованием AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: '/submit', // Укажите ваш маршрут обработки формы
+                    data: $('#textForm').serialize(), // Сериализуем данные формы
+                    success: function(response){
+                        // Выводим ответ от сервера
+                        alert(response);
+                    },
+                    error: function(){
+                        // В случае ошибки отображаем сообщение об ошибке
+                        alert('Ошибка отправки данных формы на сервер.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+{{ end }}
