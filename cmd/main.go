@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+
 	conn, err := store.ConnectToDatabase()
 	if err != nil {
 		log.Fatalf("Failed to open SQLite database: %v", err)
@@ -17,9 +18,7 @@ func main() {
 	// Создаем оркестратора
 	orchestrator := models.NewOrchestrator(conn)
 	orchestrator.Start()
-
 	err = server.StartServer()
-
 	if err != nil {
 		log.Println(err)
 	}

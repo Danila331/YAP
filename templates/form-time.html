@@ -9,9 +9,9 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f6f8fa;
+            font-size: 20px;
             color: #2d3648;
             margin: 0;
-            padding: 20px;
         }
         h1 {
             color: #2d3648;
@@ -61,22 +61,44 @@
         input[type="submit"]:hover {
             background-color: #1a2130;
         }
+        
+        nav {
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+            margin: 0;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            margin: 0 5px;
+        }
+        nav a:hover {
+            background-color: #555;
+        }
     </style>
 </head>
 <body>
-    <h1>Моя форма</h1>
+    <nav>
+        <!-- Примеры выражений и вычислений -->
+        <a href="/">Calculater</a>
+        <a href="/expressions">Expressions</a>
+        <a href="/form-time">Time</a>
+    </nav>
+    <h1>Time of expressions</h1>
     <form action="/submit-time" method="post">
         <label for="field1">Время для сложения:</label>
-        <input type="text" id="field1" name="field1" value="200">
+        <input type="text" id="field1" name="field1" value="10">
         
         <label for="field2">Время для вычитания:</label>
-        <input type="text" id="field2" name="field2" value="200">
+        <input type="text" id="field2" name="field2" value="10">
         
         <label for="field3">Время для умножения:</label>
-        <input type="text" id="field3" name="field3" value="200">
+        <input type="text" id="field3" name="field3" value="10">
         
         <label for="field4">Время для деления:</label>
-        <input type="text" id="field4" name="field4" value="200">
+        <input type="text" id="field4" name="field4" value="10">
         
         <input type="submit" value="Отправить">
     </form>

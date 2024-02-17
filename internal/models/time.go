@@ -3,10 +3,10 @@ package models
 import "github/Danila331/YAP/internal/store"
 
 type TimeOperations struct {
-	TimePulse string `db:"timepulse" json:"timepulse"`
-	TimeMinus string `db:"timeminus" json:"timeminus"`
-	TimeProz  string `db:"timeproz" json:"timeproz"`
-	TimeDel   string `db:"timedel" json:"timedel"`
+	TimePulse int `db:"timepulse" json:"timepulse"`
+	TimeMinus int `db:"timeminus" json:"timeminus"`
+	TimeProz  int `db:"timeproz" json:"timeproz"`
+	TimeDel   int `db:"timedel" json:"timedel"`
 }
 
 type TimeOperationsInterface interface {

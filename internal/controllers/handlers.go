@@ -31,7 +31,6 @@ func ExpressionsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := Task.ReadAll()
-	fmt.Println(data)
 
 	if err != nil {
 		fmt.Println(err)

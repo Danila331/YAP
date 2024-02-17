@@ -22,7 +22,7 @@ func StartServer() error {
 	http.HandleFunc("/form-time", controllers.FormTimePageHanlder)
 	// http.Handle("../static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	err := http.ListenAndServe(":8081", nil)
+	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		return err
 	}

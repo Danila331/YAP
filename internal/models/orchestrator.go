@@ -2,7 +2,9 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"sync"
+	"time"
 )
 
 // Orchestrator представляет оркестратора задач
@@ -24,11 +26,13 @@ func NewOrchestrator(db *sql.DB) *Orchestrator {
 
 // Start запускает оркестратора
 func (o *Orchestrator) Start() {
-	for i := 0; i < 1; i++ {
+	for i := 0; i < 5; i++ {
 		o.workerCounter++
 		worker := NewWorker(o.workerCounter, o.db, o.workerChange)
 		o.workers = append(o.workers, worker)
 		worker.Start()
+		fmt.Println("Worker start work")
+		time.Sleep(1 * time.Minute)
 	}
 
 	go o.monitorWorkers()

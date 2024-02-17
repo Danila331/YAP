@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -19,7 +20,7 @@ type Worker struct {
 	workerChange chan *Worker
 	stopCh       chan struct{}
 	mutex        sync.Mutex
-	dbMutex      sync.Mutex
+	dbmutex      sync.Mutex
 }
 
 // NewWorker создает нового воркера
@@ -65,7 +66,6 @@ func (w *Worker) processTask() {
 // monitorTasks периодически проверяет базу данных на наличие новых задач
 func (w *Worker) monitorTasks() {
 	ticker := time.NewTicker(1 * time.Minute)
-	defer ticker.Stop()
 
 	for {
 		select {
@@ -82,9 +82,7 @@ func (w *Worker) fetchTasks() {
 	w.mutex.Lock()
 	defer w.mutex.Unlock()
 
-	w.dbMutex.Lock()
-	defer w.dbMutex.Unlock()
-	rows, err := w.db.Query("SELECT id, expression FROM tasks WHERE processed = 0 LIMIT 5")
+	rows, err := w.db.Query("SELECT id, expression FROM tasks WHERE processed = 0 AND idservera = ? AND status = ? LIMIT 5", w.id, "pending")
 	if err != nil {
 		log.Printf("Worker %d: Failed to query tasks: %v", w.id, err)
 		return
@@ -92,28 +90,44 @@ func (w *Worker) fetchTasks() {
 	defer rows.Close()
 
 	for rows.Next() {
+		w.dbmutex.Lock()
 		var task Task
+		fmt.Println(rows)
+
 		if err := rows.Scan(&task.Id, &task.Expression); err != nil {
 			log.Printf("Worker %d: Failed to scan task: %v", w.id, err)
 			continue
 		}
-		task.IdServer = w.id
 		task.Status = "processed"
-		time.Sleep(60 * time.Second)
-		if err := task.Update(); err != nil {
-			log.Printf("Worker %d: Failed to Update: %v", w.id, err)
+		_, err := w.db.Query("UPDATE tasks SET status = ? WHERE id = ?",
+			"processing",
+			task.Id,
+		)
+		if err != nil {
+			log.Printf("Worker %d: Failed to update task: %v", w.id, err)
 			continue
 		}
 		w.taskQueue <- &task
+		w.dbmutex.Unlock()
 	}
 }
 
 // calculateExpression вычисляет значение выражения
 func (w *Worker) calculateExpression(expression string) string {
 	resultChan := make(chan string)
-
+	var timer TimeOperations
+	timer, err := timer.Read()
+	if err != nil {
+		return ""
+	}
+	countPulse := strings.Count(expression, "+") * timer.TimePulse
+	countMinus := strings.Count(expression, "-") * timer.TimeMinus
+	countProz := strings.Count(expression, "*") * timer.TimeProz
+	countDel := strings.Count(expression, "/") * timer.TimeDel
+	resultTime := time.Duration(countPulse + countMinus + countDel + countProz)
 	go func() {
 		evaluator, err := govaluate.NewEvaluableExpression(expression)
+
 		if err != nil {
 			resultChan <- fmt.Sprintf("Error: %v", err)
 			return
@@ -131,7 +145,7 @@ func (w *Worker) calculateExpression(expression string) string {
 			return
 		}
 
-		time.Sleep(5 * time.Second) // Имитация долгих вычислений
+		time.Sleep(resultTime * time.Second) // Имитация долгих вычислений
 
 		resultStr := strconv.FormatFloat(resultFloat, 'f', -1, 64)
 		resultChan <- resultStr
@@ -140,7 +154,7 @@ func (w *Worker) calculateExpression(expression string) string {
 	select {
 	case result := <-resultChan:
 		return result
-	case <-time.After(10 * time.Second): // Ограничение времени выполнения
+	case <-time.After((resultTime * 2) * time.Minute): // Ограничение времени выполнения
 		return "Error: calculation timed out"
 	}
 }
@@ -149,10 +163,7 @@ func (w *Worker) calculateExpression(expression string) string {
 func (w *Worker) saveResult(taskID int, result string) {
 	w.mutex.Lock()
 	defer w.mutex.Unlock()
-
-	w.dbMutex.Lock()
-	defer w.dbMutex.Unlock()
-	_, err := w.db.Exec("UPDATE tasks SET status = 'completed' result = ?, processed = 1 WHERE id = ?", result, taskID)
+	_, err := w.db.Exec("UPDATE tasks SET result = ?, processed = 1, status = 'ok' WHERE id = ?", result, taskID)
 	if err != nil {
 		log.Printf("Worker %d: Failed to save result: %v", w.id, err)
 	}

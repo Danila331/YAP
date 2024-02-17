@@ -11,7 +11,7 @@
             background-color: #f6f8fa;
             color: #2d3648;
             margin: 0;
-            padding: 20px;
+            font-size: 20px;
         }
         h1 {
             color: #2d3648;
@@ -58,10 +58,32 @@
         .submit-button:hover {
             background-color: #2a78ff; /* Изменяем цвет фона при наведении */
         }
+
+        nav {
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+            margin: 0;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            margin: 0 5px;
+        }
+        nav a:hover {
+            background-color: #555;
+        }
     </style>
 </head>
 <body>
-    <h1>Form</h1>
+    <nav>
+        <!-- Примеры выражений и вычислений -->
+        <a href="/">Calculater</a>
+        <a href="/expressions">Expressions</a>
+        <a href="/form-time">Time</a>
+    </nav>
+    <h1>Calculater</h1>
     <div class="message">
         <!-- Форма с текстовым полем -->
         <form action="/submit" method="post">

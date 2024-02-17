@@ -2,13 +2,14 @@ package models
 
 import (
 	"fmt"
+	"github/Danila331/YAP/internal/pkg"
 	"github/Danila331/YAP/internal/store"
 )
 
 // Структура арифметического выражения
 type Task struct {
 	Id         int    `db:"id" json:"id"`
-	IdServer   int    `db:"idserver" json:"idserver"` // Add field to database
+	IdServer   int    `db:"idservera" json:"idservera"` // Add field to database
 	Expression string `db:"expression" json:"expression"`
 	Result     string `db:"result" json:"result"`
 	Status     string `db:"status" json:"status"`
@@ -33,9 +34,9 @@ func (t *Task) Create() error {
 		return err
 	}
 
-	queryRow := fmt.Sprintf("INSERT INTO tasks(expression, result, status, startdate) VALUES (?, ?, ?, ?)")
+	queryRow := fmt.Sprintf("INSERT INTO tasks(expression, result, status, startdate,idservera) VALUES (?, ?, ?, ?,?)")
 
-	_, err = conn.Exec(queryRow, t.Expression, "", "pending", t.StartDate)
+	_, err = conn.Exec(queryRow, t.Expression, "", "pending", t.StartDate, pkg.Random(1, 5))
 
 	if err != nil {
 		return err

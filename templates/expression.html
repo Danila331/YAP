@@ -12,7 +12,6 @@
             color: #2d3648;
             font-size: 20px;
             margin: 0;
-            padding: 20px;
         }
         .expressiom-card {
             display: flex;
@@ -24,9 +23,31 @@
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             padding: 20px;
         }
+        
+        nav {
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+            margin: 0;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            margin: 0 5px;
+        }
+        nav a:hover {
+            background-color: #555;
+        }
     </style>
 </head>
 <body>
+    <nav>
+        <!-- Примеры выражений и вычислений -->
+        <a href="/">Calculater</a>
+        <a href="/expressions">Expressions</a>
+        <a href="/form-time">Time</a>
+    </nav>
     <div class="expressiom-card">   
         <p class="card__id"><strong>Id:</strong> {{.Id}}</p>
         <p class="card__expression"><strong>Expression:</strong> {{.Expression}}</p>

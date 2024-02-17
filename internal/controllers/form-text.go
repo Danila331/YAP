@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"net/http"
 	"path/filepath"
+	"strconv"
 )
 
 func FormTimeHandler(w http.ResponseWriter, r *http.Request) {
@@ -22,10 +23,14 @@ func FormTimeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	timePulse := r.Form.Get("field1")
-	timeMinus := r.Form.Get("field2")
-	timeProz := r.Form.Get("field3")
-	timeDel := r.Form.Get("field4")
+	timePulse, err := strconv.Atoi(r.Form.Get("field1"))
+	timeMinus, err := strconv.Atoi(r.Form.Get("field2"))
+	timeProz, err := strconv.Atoi(r.Form.Get("field3"))
+	timeDel, err := strconv.Atoi(r.Form.Get("field4"))
+
+	if err != nil {
+		return
+	}
 
 	time := models.TimeOperations{
 		TimePulse: timePulse,
