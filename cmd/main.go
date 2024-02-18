@@ -18,7 +18,7 @@ func main() {
 	// Создаем оркестратора
 	orchestrator := models.NewOrchestrator(conn)
 	orchestrator.Start()
-	err = server.StartServer()
+	server.StartServer()
 	if err != nil {
 		log.Println(err)
 	}

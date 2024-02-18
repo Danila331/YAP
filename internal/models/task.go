@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"github/Danila331/YAP/internal/pkg"
 	"github/Danila331/YAP/internal/store"
 )
 
@@ -34,9 +33,9 @@ func (t *Task) Create() error {
 		return err
 	}
 
-	queryRow := fmt.Sprintf("INSERT INTO tasks(expression, result, status, startdate,idservera) VALUES (?, ?, ?, ?,?)")
+	queryRow := fmt.Sprintf("INSERT INTO tasks(expression, result, status, startdate) VALUES (?, ?, ?, ?)")
 
-	_, err = conn.Exec(queryRow, t.Expression, "", "pending", t.StartDate, pkg.Random(1, 5))
+	_, err = conn.Exec(queryRow, t.Expression, "", "pending", t.StartDate)
 
 	if err != nil {
 		return err

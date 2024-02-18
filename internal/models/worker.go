@@ -65,7 +65,8 @@ func (w *Worker) processTask() {
 
 // monitorTasks периодически проверяет базу данных на наличие новых задач
 func (w *Worker) monitorTasks() {
-	ticker := time.NewTicker(1 * time.Minute)
+	ticker := time.NewTicker(time.Duration(w.id*1) * time.Minute)
+	defer ticker.Stop()
 
 	for {
 		select {
@@ -82,7 +83,7 @@ func (w *Worker) fetchTasks() {
 	w.mutex.Lock()
 	defer w.mutex.Unlock()
 
-	rows, err := w.db.Query("SELECT id, expression FROM tasks WHERE processed = 0 AND idservera = ? AND status = ? LIMIT 5", w.id, "pending")
+	rows, err := w.db.Query("SELECT id, expression FROM tasks WHERE processed = 0 AND status = ? LIMIT 5", "pending")
 	if err != nil {
 		log.Printf("Worker %d: Failed to query tasks: %v", w.id, err)
 		return
@@ -90,31 +91,18 @@ func (w *Worker) fetchTasks() {
 	defer rows.Close()
 
 	for rows.Next() {
-		w.dbmutex.Lock()
 		var task Task
 		fmt.Println(rows)
-
 		if err := rows.Scan(&task.Id, &task.Expression); err != nil {
 			log.Printf("Worker %d: Failed to scan task: %v", w.id, err)
 			continue
 		}
-		task.Status = "processed"
-		_, err := w.db.Query("UPDATE tasks SET status = ? WHERE id = ?",
-			"processing",
-			task.Id,
-		)
-		if err != nil {
-			log.Printf("Worker %d: Failed to update task: %v", w.id, err)
-			continue
-		}
 		w.taskQueue <- &task
-		w.dbmutex.Unlock()
 	}
 }
 
 // calculateExpression вычисляет значение выражения
 func (w *Worker) calculateExpression(expression string) string {
-	resultChan := make(chan string)
 	var timer TimeOperations
 	timer, err := timer.Read()
 	if err != nil {
@@ -125,38 +113,14 @@ func (w *Worker) calculateExpression(expression string) string {
 	countProz := strings.Count(expression, "*") * timer.TimeProz
 	countDel := strings.Count(expression, "/") * timer.TimeDel
 	resultTime := time.Duration(countPulse + countMinus + countDel + countProz)
-	go func() {
-		evaluator, err := govaluate.NewEvaluableExpression(expression)
+	evaluator, _ := govaluate.NewEvaluableExpression(expression)
 
-		if err != nil {
-			resultChan <- fmt.Sprintf("Error: %v", err)
-			return
-		}
-
-		result, err := evaluator.Evaluate(nil)
-		if err != nil {
-			resultChan <- fmt.Sprintf("Error: %v", err)
-			return
-		}
-
-		resultFloat, ok := result.(float64)
-		if !ok {
-			resultChan <- "Error: result is not a float64"
-			return
-		}
-
-		time.Sleep(resultTime * time.Second) // Имитация долгих вычислений
-
-		resultStr := strconv.FormatFloat(resultFloat, 'f', -1, 64)
-		resultChan <- resultStr
-	}()
-
-	select {
-	case result := <-resultChan:
-		return result
-	case <-time.After((resultTime * 2) * time.Minute): // Ограничение времени выполнения
-		return "Error: calculation timed out"
-	}
+	result, _ := evaluator.Evaluate(nil)
+	resultFloat, _ := result.(float64)
+	// Имитация долгих вычислений
+	resultStr := strconv.FormatFloat(resultFloat, 'f', -1, 64)
+	time.Sleep(resultTime * time.Second)
+	return resultStr
 }
 
 // saveResult сохраняет результат в базе данных
